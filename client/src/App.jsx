@@ -9,6 +9,36 @@ const SearchBar = ({ value, onChange, onSearch }) => (
   </div>
 );
 
+const FilterDropdowns = ({ workouts, onFilterChange, filters }) => {
+  const uniqueNames = [...new Set(workouts.map(workout => workout.name))];
+  const uniqueEquipment = [...new Set(workouts.map(workout => workout.equipment))];
+  const uniqueDates = [...new Set(workouts.map(workout => new Date(workout.date).toLocaleDateString()))];
+
+  return (
+    <div>
+      <select value={filters.name} onChange={e => onFilterChange('name', e.target.value)}>
+        <option value="">Select Name</option>
+        {uniqueNames.map(name => (
+          <option key={name} value={name}>{name}</option>
+        ))}
+      </select>
+      <select value={filters.equipment} onChange={e => onFilterChange('equipment', e.target.value)}>
+        <option value="">Select Equipment</option>
+        {uniqueEquipment.map(equipment => (
+          <option key={equipment} value={equipment}>{equipment}</option>
+        ))}
+      </select>
+      <select value={filters.date} onChange={e => onFilterChange('date', e.target.value)}>
+        <option value="">Select Date</option>
+        {uniqueDates.map(date => (
+          <option key={date} value={date}>{date}</option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+
 const Table = ({ workouts, onEdit, onDelete }) => (
   <table>
     <thead>
@@ -92,6 +122,13 @@ const App = () => {
   const [workouts, setWorkouts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingWorkout, setEditingWorkout] = useState(null);
+  const [showStats, setShowStats] = useState(false);
+  const [filters, setFilters] = useState({
+    name: '',
+    equipment: '',
+    date: ''
+  });
+
   const selectedTable = 'Workouts';
 
   useEffect(() => {
@@ -143,12 +180,21 @@ const App = () => {
     }
   };
 
+  const handleViewStats = () => {
+    // Implement logic to compute or fetch stats based on selected filters
+    console.log('Filters:', filters);
+    // You might need to call an API or filter the `workouts` state and compute averages
+  };
+
   return (
     <div className="app">
       <h1 style={{fontFamily:"Gill Sans"}}>GYM WORKOUT TRACKER</h1>
       <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onSearch={handleSearch} />
       <Button onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''}
       )}> Add Workout </Button>
+      <Button onClick={() => setShowStats(!showStats)}>View Stats</Button>
+      {showStats && <FilterDropdowns workouts={workouts} filters={filters} onFilterChange={(filter, value) => setFilters({ ...filters, [filter]: value })} />}
+      {showStats && <Button onClick={handleViewStats}>Confirm</Button>}
       {editingWorkout && (
         <WorkoutForm
           initialWorkout={editingWorkout}
@@ -156,7 +202,7 @@ const App = () => {
           onCancel={() => setEditingWorkout(null)}
         />
       )}
-      <Table workouts={workouts} onEdit={(workouts) => setEditingWorkout({...workouts, _id: workouts._id})} onDelete={handleDeleteWorkout} />
+      {!showStats && <Table workouts={workouts} onEdit={(workouts) => setEditingWorkout({...workouts, _id: workouts._id})} onDelete={handleDeleteWorkout} />}
     </div>
   );
 };
