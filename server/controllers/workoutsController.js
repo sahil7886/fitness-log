@@ -6,6 +6,7 @@ exports.getWorkouts = async (req, res) => {
 };
 
 exports.addWorkouts = async (req, res) => {
+  console.log("Data to add:", req.body);
   const newWorkouts = new Workouts(req.body);
   await newWorkouts.save();
   res.send(newWorkouts);
