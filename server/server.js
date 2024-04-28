@@ -25,11 +25,7 @@ mongoose
 
   
 // routes
-const Exercise = require('./routes/exercise');
-const Workout = require('./routes/workout');
 const Workouts = require('./routes/workouts')
-app.use('/', Exercise);
-app.use('/', Workout);
 app.use('/', Workouts);
 
 // listener

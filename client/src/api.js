@@ -33,7 +33,7 @@ export const createItem = async (selectedTable, item) => {
 // Update item (PUT)
 export const updateItem = async (selectedTable, item) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/update${selectedTable}/${item.id}`, {
+    const response = await fetch(`${API_BASE_URL}/update${selectedTable}/${item._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -51,11 +51,11 @@ export const updateItem = async (selectedTable, item) => {
 // Delete item (DELETE)
 export const deleteItem = async (selectedTable, itemId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/delete${selectedTable}/:${itemId}`, {
+    const response = await fetch(`${API_BASE_URL}/delete${selectedTable}/${itemId}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Network response was not ok');
-    return await response.json(); // Can return success message or deleted item's details
+    //return await response.json(); // Can return success message or deleted item's details
   } catch (error) {
     console.error("Error deleting item:", error);
     throw error;

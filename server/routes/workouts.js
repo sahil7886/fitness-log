@@ -5,9 +5,9 @@ const router = express.Router();
 const { getWorkouts, addWorkouts, updateWorkouts, deleteWorkouts } = require('../controllers/workoutsController');
 
 //api routes
-router.get('/', getWorkouts);
-router.post('/', addWorkouts);
-router.put('/', updateWorkouts);
-router.delete('/', deleteWorkouts);
+router.get('/getWorkouts', getWorkouts);
+router.post('/addWorkouts', addWorkouts);
+router.put('/updateWorkouts/:id', updateWorkouts);
+router.delete('/deleteWorkouts/:id', deleteWorkouts);
 
 module.exports = router;

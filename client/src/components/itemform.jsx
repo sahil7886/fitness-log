@@ -1,30 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-// Simulated schema object based on your Mongoose schema
-// This could also be passed as a prop if you have different forms with different schemas
-const schemas = {
-  exercise: {
-    name: 'String',
-    targetMuscles: 'String',
-    lastDone: 'Date',
-    SSR: 'Number',
-    Equipment: 'String'
-  },
-  workout: {
-    exercise: 'String',
-    reps: 'Number',
-    weight: 'Number',
-    setNo: 'Number'
-  },
-  workouts: {
-    date: 'Date',
-    duration: 'Number',
-    exercises: 'Number',
-    sets: 'Number',
-    volume: 'Number'
-  }
-};
-
 // Mapping from schema types to input types
 const inputTypeMap = {
   String: 'text',
