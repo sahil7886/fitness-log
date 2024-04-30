@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { fetchData, createItem, updateItem, deleteItem } from './api'; // Assuming the file name is api.js
+import { fetchData, createItem, updateItem, deleteItem } from './api';
 import './App.css'
+
+const API_BASE_URL = 'http://localhost:8080';
 
 const SearchBar = ({ value, onChange, onSearch }) => (
   <div>
@@ -12,8 +14,7 @@ const SearchBar = ({ value, onChange, onSearch }) => (
 const FilterDropdowns = ({ workouts, onFilterChange, filters }) => {
   const uniqueNames = [...new Set(workouts.map(workout => workout.name))];
   const uniqueEquipment = [...new Set(workouts.map(workout => workout.equipment))];
-  const uniqueDates = [...new Set(workouts.map(workout => new Date(workout.date).toLocaleDateString()))];
-
+  
   return (
     <div>
       <select value={filters.name} onChange={e => onFilterChange('name', e.target.value)}>
@@ -26,12 +27,6 @@ const FilterDropdowns = ({ workouts, onFilterChange, filters }) => {
         <option value="">Select Equipment</option>
         {uniqueEquipment.map(equipment => (
           <option key={equipment} value={equipment}>{equipment}</option>
-        ))}
-      </select>
-      <select value={filters.date} onChange={e => onFilterChange('date', e.target.value)}>
-        <option value="">Select Date</option>
-        {uniqueDates.map(date => (
-          <option key={date} value={date}>{date}</option>
         ))}
       </select>
     </div>
@@ -118,6 +113,31 @@ const WorkoutForm = ({ onSave, onCancel, initialWorkout }) => {
   );
 };
 
+const StatsTable = ({ stats }) => {
+  if (!stats) return null;
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Equipment</th>
+          <th>Average Weight (lbs)</th>
+          <th>Average Duration (minutes)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{stats.name}</td>
+          <td>{stats.equipment}</td>
+          <td>{stats.averageWeight.toFixed(2)}</td>
+          <td>{stats.averageDuration.toFixed(2)}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
 const App = () => {
   const [workouts, setWorkouts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -125,9 +145,9 @@ const App = () => {
   const [showStats, setShowStats] = useState(false);
   const [filters, setFilters] = useState({
     name: '',
-    equipment: '',
-    date: ''
+    equipment: ''
   });
+  const [stats, setStats] = useState(null);
 
   const selectedTable = 'Workouts';
 
@@ -180,10 +200,33 @@ const App = () => {
     }
   };
 
-  const handleViewStats = () => {
-    // Implement logic to compute or fetch stats based on selected filters
+  const handleViewStats = async () => {
     console.log('Filters:', filters);
-    // You might need to call an API or filter the `workouts` state and compute averages
+    if (!filters.name || !filters.equipment) {
+      alert("Please select all filters before confirming.");
+      return;
+    }
+    try {
+      const response = await fetch(`${API_BASE_URL}/viewStats`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: filters.name,
+          equipment: filters.equipment
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch statistics. Please try again.');
+      }
+      const data = await response.json();
+      console.log('Received stats:', data);
+      setStats({ ...data, name: filters.name, equipment: filters.equipment });
+    } catch (error) {
+      console.error(`Error fetching stats: ${error.message}`);
+      alert('Error fetching stats. Please check the console for more details.');
+    }
   };
 
   return (
@@ -195,6 +238,7 @@ const App = () => {
       <Button onClick={() => setShowStats(!showStats)}>View Stats</Button>
       {showStats && <FilterDropdowns workouts={workouts} filters={filters} onFilterChange={(filter, value) => setFilters({ ...filters, [filter]: value })} />}
       {showStats && <Button onClick={handleViewStats}>Confirm</Button>}
+      {showStats && stats && <StatsTable stats={stats} />}
       {editingWorkout && (
         <WorkoutForm
           initialWorkout={editingWorkout}

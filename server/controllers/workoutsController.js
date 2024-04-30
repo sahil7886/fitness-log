@@ -35,7 +35,39 @@ exports.deleteWorkouts = async (req, res) => {
     }
     res.send(`Workouts deleted successfully: ${deletedWorkouts.name}`);
   } catch (error) {
-    console.error("Error details:", error);
+    console.error("Error deleting Workouts:", error);
+    res.status(400).send(`Error deleting Workouts: ${error.message}`);
+  }
+};
+
+exports.viewStats = async (req, res) => {
+  try {
+    console.log("view stats:", req.body);
+    const {name, equipment} = req.body;
+
+    const pipeline = [
+      {
+        $match: {
+          name: name,
+          equipment: equipment
+        }
+      },
+      {
+        $group: {
+          _id: null, // Grouping without specific field, all results are aggregated together
+          averageWeight: { $avg: "$weight" },
+          averageDuration: { $avg: "$duration" }
+        }
+      }
+    ];
+    const stats = await Workouts.aggregate(pipeline);
+    if (stats.length == 0) {
+      return res.status(404).send('No matches found');
+    } else {
+      return res.json(stats[0]);
+    }
+  } catch (error) {
+    console.error(`Error fetching stats: ${error.message}`);
     res.status(400).send(`Error deleting Workouts: ${error.message}`);
   }
 };

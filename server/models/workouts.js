@@ -12,6 +12,10 @@ const workoutsSchema = new mongoose.Schema({
     equipment: String,
     targetMuscles: String,
   });
-  const Workouts = mongoose.model('Workouts', workoutsSchema);
+
+//index:
+workoutsSchema.index({ name: 1, equipment: 1 });
+
+const Workouts = mongoose.model('Workouts', workoutsSchema);
 
 module.exports = Workouts;

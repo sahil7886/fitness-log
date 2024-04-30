@@ -19,10 +19,10 @@ mongoose
 	.connect(process.env.MONGO_URI, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
+		readConcern: { level: 'majority' }
 	})
 	.then(() => console.log("Database Connected.."))
 	.catch((err) => console.log("Failed to connect:", err));
-
   
 // routes
 const Workouts = require('./routes/workouts')
