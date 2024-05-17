@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { fetchData, createItem, updateItem, deleteItem } from './api';
-import './App.css'
+import './App.css';
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:3000';
 
 const SearchBar = ({ value, onChange, onSearch }) => (
-  <div>
-    <input type="text" value={value} onChange={onChange} placeholder="Search workouts" />
-    <button onClick={onSearch}>Search</button>
+  <div className="flex justify-center my-4">
+    <input 
+      type="text" 
+      value={value} 
+      onChange={onChange} 
+      placeholder="Search workouts" 
+      className="p-2 rounded-l bg-gray-700 text-white border-none"
+    />
+    <button 
+      onClick={onSearch} 
+      className="p-2 bg-purple-500 text-white rounded-r hover:bg-purple-700"
+    >
+      Search
+    </button>
   </div>
 );
 
@@ -16,14 +27,22 @@ const FilterDropdowns = ({ workouts, onFilterChange, filters }) => {
   const uniqueEquipment = [...new Set(workouts.map(workout => workout.equipment))];
   
   return (
-    <div>
-      <select value={filters.name} onChange={e => onFilterChange('name', e.target.value)}>
+    <div className="flex justify-center space-x-4 my-4">
+      <select 
+        value={filters.name} 
+        onChange={e => onFilterChange('name', e.target.value)} 
+        className="p-2 bg-gray-700 text-white rounded"
+      >
         <option value="">Select Name</option>
         {uniqueNames.map(name => (
           <option key={name} value={name}>{name}</option>
         ))}
       </select>
-      <select value={filters.equipment} onChange={e => onFilterChange('equipment', e.target.value)}>
+      <select 
+        value={filters.equipment} 
+        onChange={e => onFilterChange('equipment', e.target.value)} 
+        className="p-2 bg-gray-700 text-white rounded"
+      >
         <option value="">Select Equipment</option>
         {uniqueEquipment.map(equipment => (
           <option key={equipment} value={equipment}>{equipment}</option>
@@ -33,36 +52,39 @@ const FilterDropdowns = ({ workouts, onFilterChange, filters }) => {
   );
 };
 
-
 const Table = ({ workouts, onEdit, onDelete }) => (
-  <table>
+  <table className="min-w-full bg-gray-800 text-white">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Date</th>
-        <th>Duration (minutes)</th>
-        <th>Sets</th>
-        <th>Reps</th>
-        <th>Weight (lbs)</th>
-        <th>Equipment</th>
-        <th>Target Muscles</th>
-        <th>Actions</th>
+        {['Name', 'Date', 'Duration (minutes)', 'Sets', 'Reps', 'Weight (lbs)', 'Equipment', 'Target Muscles', 'Actions'].map(header => (
+          <th key={header} className="border-b border-gray-600 p-4 text-left">{header}</th>
+        ))}
       </tr>
     </thead>
     <tbody>
       {workouts.map((workout) => (
-        <tr key={workout._id}>
-          <td>{workout.name}</td>
-          <td>{new Date(workout.date).toLocaleDateString()}</td>
-          <td>{workout.duration}</td>
-          <td>{workout.sets}</td>
-          <td>{workout.reps}</td>
-          <td>{workout.weight}</td>
-          <td>{workout.equipment}</td>
-          <td>{workout.targetMuscles}</td>
-          <td>
-            <button onClick={() => onEdit(workout)}>Edit</button>
-            <button onClick={() => onDelete(workout._id)}>Delete</button>
+        <tr key={workout._id} className="hover:bg-gray-700">
+          <td className="p-4">{workout.name}</td>
+          <td className="p-4">{new Date(workout.date).toLocaleDateString()}</td>
+          <td className="p-4">{workout.duration}</td>
+          <td className="p-4">{workout.sets}</td>
+          <td className="p-4">{workout.reps}</td>
+          <td className="p-4">{workout.weight}</td>
+          <td className="p-4">{workout.equipment}</td>
+          <td className="p-4">{workout.targetMuscles}</td>
+          <td className="p-4 space-x-2">
+            <button 
+              onClick={() => onEdit(workout)} 
+              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
+            >
+              Edit
+            </button>
+            <button 
+              onClick={() => onDelete(workout._id)} 
+              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       ))}
@@ -72,7 +94,10 @@ const Table = ({ workouts, onEdit, onDelete }) => (
 
 const Button = ({ children, onClick, className }) => {
   return (
-    <button className={`btn ${className}`} onClick={onClick}>
+    <button 
+      className={`px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700 ${className}`} 
+      onClick={onClick}
+    >
       {children}
     </button>
   );
@@ -96,18 +121,21 @@ const WorkoutForm = ({ onSave, onCancel, initialWorkout }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="workout-form">
-      <input name="name" value={workout.name} onChange={handleChange} placeholder="Name" required />
-      <input name="date" value={workout.date} onChange={handleChange} placeholder="Date" required />
-      <input name="duration" value={workout.duration} onChange={handleChange} placeholder="Duration" required />
-      <input name="sets" value={workout.sets} onChange={handleChange} placeholder="Sets" required />
-      <input name="reps" value={workout.reps} onChange={handleChange} placeholder="Reps" required />  
-      <input name="weight" value={workout.weight} onChange={handleChange} placeholder="Weight" required />
-      <input name="equipment" value={workout.equipment} onChange={handleChange} placeholder="Equipment" required />
-      <input name="targetMuscles" value={workout.targetMuscles} onChange={handleChange} placeholder="Target Muscles" required />
-      <div className="form-actions">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded">
+      {['name', 'date', 'duration', 'sets', 'reps', 'weight', 'equipment', 'targetMuscles'].map(field => (
+        <input 
+          key={field}
+          name={field}
+          value={workout[field]}
+          onChange={handleChange}
+          placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+          required
+          className="w-full p-2 bg-gray-700 text-white rounded"
+        />
+      ))}
+      <div className="flex justify-between">
         <Button type="submit">Save</Button>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onCancel} className="bg-gray-600 hover:bg-gray-800">Cancel</Button>
       </div>
     </form>
   );
@@ -117,21 +145,20 @@ const StatsTable = ({ stats }) => {
   if (!stats) return null;
 
   return (
-    <table>
+    <table className="min-w-full bg-gray-800 text-white">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Equipment</th>
-          <th>Average Weight (lbs)</th>
-          <th>Average Duration (minutes)</th>
+          {['Name', 'Equipment', 'Average Weight (lbs)', 'Average Duration (minutes)'].map(header => (
+            <th key={header} className="border-b border-gray-600 p-4 text-left">{header}</th>
+          ))}
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{stats.name}</td>
-          <td>{stats.equipment}</td>
-          <td>{stats.averageWeight.toFixed(2)}</td>
-          <td>{stats.averageDuration.toFixed(2)}</td>
+        <tr className="hover:bg-gray-700">
+          <td className="p-4">{stats.name}</td>
+          <td className="p-4">{stats.equipment}</td>
+          <td className="p-4">{stats.averageWeight.toFixed(2)}</td>
+          <td className="p-4">{stats.averageDuration.toFixed(2)}</td>
         </tr>
       </tbody>
     </table>
@@ -230,14 +257,17 @@ const App = () => {
   };
 
   return (
-    <div className="app">
-      <h1 style={{fontFamily:"Gill Sans"}}>GYM WORKOUT TRACKER</h1>
+    <div className="min-h-screen bg-gray-900 text-gray-200 font-roboto p-6">
+      <h1 className="text-4xl font-bold mb-8 text-center py-4">GYM WORKOUT TRACKER</h1>
       <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onSearch={handleSearch} />
-      <Button onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''}
-      )}> Add Workout </Button>
-      <Button onClick={() => setShowStats(!showStats)}>View Stats</Button>
+      <div className="flex justify-center space-x-4 mb-4 py-6 px-4">
+        <Button onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''})}> 
+          Add Workout 
+        </Button>
+        <Button onClick={() => setShowStats(!showStats)}>View Stats</Button>
+      </div>
       {showStats && <FilterDropdowns workouts={workouts} filters={filters} onFilterChange={(filter, value) => setFilters({ ...filters, [filter]: value })} />}
-      {showStats && <Button onClick={handleViewStats}>Confirm</Button>}
+      {showStats && <Button onClick={handleViewStats} className="block mx-auto my-4">Confirm</Button>}
       {showStats && stats && <StatsTable stats={stats} />}
       {editingWorkout && (
         <WorkoutForm
