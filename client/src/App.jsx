@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchData, createItem, updateItem, deleteItem } from './api';
 import './App.css';
+import logo from './images/dumbbell_colour.png';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -258,13 +259,18 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 font-roboto p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center py-4">GYM WORKOUT TRACKER</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center pt-8 pb-0">GYM WORKOUT TRACKER</h1>
+      <div class="flex justify-center items-center pb-6">
+        <img src={logo} alt="Logo" className="h-12" />
+      </div>
       <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onSearch={handleSearch} />
-      <div className="flex justify-center space-x-4 mb-4 py-6 px-4">
-        <Button onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''})}> 
+      <div class="flex justify-center space-x-4 mb-4 py-6 px-4 ">
+        <button class = "rounded-lg bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 px-4 py-2.5 font-medium text-white" 
+        onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''})}> 
           Add Workout 
-        </Button>
-        <Button onClick={() => setShowStats(!showStats)}>View Stats</Button>
+        </button>
+        <button class = "rounded-lg bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 px-4 font-medium text-white"
+        onClick={() => setShowStats(!showStats)}>View Stats</button>
       </div>
       {showStats && <FilterDropdowns workouts={workouts} filters={filters} onFilterChange={(filter, value) => setFilters({ ...filters, [filter]: value })} />}
       {showStats && <Button onClick={handleViewStats} className="block mx-auto my-4">Confirm</Button>}
