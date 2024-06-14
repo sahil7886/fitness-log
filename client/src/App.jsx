@@ -12,11 +12,11 @@ const SearchBar = ({ value, onChange, onSearch }) => (
       value={value} 
       onChange={onChange} 
       placeholder="Search workouts" 
-      className="p-2 rounded-l bg-gray-700 text-white border-none"
+      className="p-2 rounded-l bg-gray-700 text-white border-none text-sm pr-6"
     />
     <button 
       onClick={onSearch} 
-      className="p-2 bg-purple-500 text-white rounded-r hover:bg-purple-700"
+      className="p-2 bg-purple-600 text-zinc-200 text-sm px-4 rounded-r hover:bg-purple-700 duration-300"
     >
       Search
     </button>
@@ -58,13 +58,13 @@ const Table = ({ workouts, onEdit, onDelete }) => (
     <thead>
       <tr>
         {['Name', 'Date', 'Duration (minutes)', 'Sets', 'Reps', 'Weight (lbs)', 'Equipment', 'Target Muscles', 'Actions'].map(header => (
-          <th key={header} className="border-b border-gray-600 p-4 text-left">{header}</th>
+          <th key={header} className="border-b border-gray-600 p-4 text-left font-medium">{header}</th>
         ))}
       </tr>
     </thead>
     <tbody>
       {workouts.map((workout) => (
-        <tr key={workout._id} className="hover:bg-gray-700">
+        <tr key={workout._id} className="hover:bg-gray-700 text-sm font-light ml-2 animate-fade-in">
           <td className="p-4">{workout.name}</td>
           <td className="p-4">{new Date(workout.date).toLocaleDateString()}</td>
           <td className="p-4">{workout.duration}</td>
@@ -76,13 +76,13 @@ const Table = ({ workouts, onEdit, onDelete }) => (
           <td className="p-4 space-x-2">
             <button 
               onClick={() => onEdit(workout)} 
-              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
+              className="px-2 py-1 bg-blue-500 text-white font-extralight rounded hover:bg-blue-700 duration-200"
             >
               Edit
             </button>
             <button 
               onClick={() => onDelete(workout._id)} 
-              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+              className="px-2 py-1 bg-red-700 text-white font-extralight rounded hover:bg-red-800 duration-200"
             >
               Delete
             </button>
@@ -96,7 +96,7 @@ const Table = ({ workouts, onEdit, onDelete }) => (
 const Button = ({ children, onClick, className }) => {
   return (
     <button 
-      className={`px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700 ${className}`} 
+      className={`px-4 py-2 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 duration-300 ${className} font-normal animate-fade-in`} 
       onClick={onClick}
     >
       {children}
@@ -146,7 +146,7 @@ const StatsTable = ({ stats }) => {
   if (!stats) return null;
 
   return (
-    <table className="min-w-full bg-gray-800 text-white">
+    <table className="min-w-full bg-gray-800 text-white animate-fade-in">
       <thead>
         <tr>
           {['Name', 'Equipment', 'Average Weight (lbs)', 'Average Duration (minutes)'].map(header => (
@@ -258,19 +258,22 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-200 font-roboto p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center pt-8 pb-0">GYM WORKOUT TRACKER</h1>
-      <div class="flex justify-center items-center pb-6">
-        <img src={logo} alt="Logo" className="h-12" />
+    <div className="min-h-screen bg-gray-900 text-gray-100 font-roboto p-6 bg-gradient-to-tl from-black via-zinc-500/10 to-black">
+      <h1 className="text-3xl font-bold mb-8 text-center pt-8 animate-fade-in mt-8">Track your Gym Workouts:</h1>
+      <div class="flex justify-center items-center pb-6 animate-fade-in">
+        <img src={logo} alt="Logo" className="h-12 hover:animate-pulse" />
       </div>
+      <div className='animate-fade-in'>
       <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onSearch={handleSearch} />
+      </div>
       <div class="flex justify-center space-x-4 mb-4 py-6 px-4 ">
-        <button class = "rounded-lg bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 px-4 py-2.5 font-medium text-white" 
+        <Button
         onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''})}> 
           Add Workout 
-        </button>
-        <button class = "rounded-lg bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 px-4 font-medium text-white"
-        onClick={() => setShowStats(!showStats)}>View Stats</button>
+        </Button>
+        <Button
+        onClick={() => setShowStats(!showStats)}>View Stats
+        </Button>
       </div>
       {showStats && <FilterDropdowns workouts={workouts} filters={filters} onFilterChange={(filter, value) => setFilters({ ...filters, [filter]: value })} />}
       {showStats && <Button onClick={handleViewStats} className="block mx-auto my-4">Confirm</Button>}
