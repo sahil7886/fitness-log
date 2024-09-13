@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { fetchData, createItem, updateItem, deleteItem } from './api';
 import './App.css';
 import logo from './images/dumbbell_colour.png';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { UserCircle } from 'lucide-react';
+import ProfilePage from './ProfilePage';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -258,35 +261,46 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 font-roboto p-6 bg-gradient-to-tl from-black via-zinc-500/10 to-black">
-      <h1 className="text-3xl font-bold mb-8 text-center pt-8 animate-fade-in mt-8">Track your Gym Workouts:</h1>
-      <div class="flex justify-center items-center pb-6 animate-fade-in">
-        <img src={logo} alt="Logo" className="h-12 hover:animate-pulse" />
+    <Router>
+      <div className="min-h-screen bg-gray-900 text-gray-100 font-roboto p-6 bg-gradient-to-tl from-black via-zinc-500/10 to-black">
+        <div className="relative mb-8">
+          <h1 className="text-3xl font-bold text-center pt-8 animate-fade-in">Track your Gym Workouts:</h1>
+          <Link to="/profile" className="absolute right-6 top-1/2 transform -translate-y-1/2 text-3xl text-purple-500 hover:text-purple-400">
+            <UserCircle size={28}/>
+          </Link>
+        </div>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/" element={
+            <>
+              <div className="flex justify-center items-center pb-6 animate-fade-in">
+                <img src={logo} alt="Logo" className="h-12 hover:animate-pulse" />
+              </div>
+              <div className='animate-fade-in'>
+                <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onSearch={handleSearch} />
+              </div>
+              <div className="flex justify-center space-x-4 mb-4 py-6 px-4 ">
+                <Button onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''})}>
+                  Add Workout
+                </Button>
+                <Button onClick={() => setShowStats(!showStats)}>View Stats</Button>
+              </div>
+              {showStats && <FilterDropdowns workouts={workouts} filters={filters} onFilterChange={(filter, value) => setFilters({ ...filters, [filter]: value })} />}
+              {showStats && <Button onClick={handleViewStats} className="block mx-auto my-4">Confirm</Button>}
+              {showStats && stats && <StatsTable stats={stats} />}
+              {editingWorkout && (
+                <WorkoutForm
+                  initialWorkout={editingWorkout}
+                  onSave={handleSaveWorkout}
+                  onCancel={() => setEditingWorkout(null)}
+                />
+              )}
+              {!showStats && <Table workouts={workouts} onEdit={(workouts) => setEditingWorkout({...workouts, _id: workouts._id})} onDelete={handleDeleteWorkout} />}
+            </>
+          } />
+        </Routes>
       </div>
-      <div className='animate-fade-in'>
-      <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onSearch={handleSearch} />
-      </div>
-      <div class="flex justify-center space-x-4 mb-4 py-6 px-4 ">
-        <Button
-        onClick={() => setEditingWorkout({name: '', date: '', duration: '', sets: '', reps: '', weight: '', equipment: '', targetMuscles: ''})}> 
-          Add Workout 
-        </Button>
-        <Button
-        onClick={() => setShowStats(!showStats)}>View Stats
-        </Button>
-      </div>
-      {showStats && <FilterDropdowns workouts={workouts} filters={filters} onFilterChange={(filter, value) => setFilters({ ...filters, [filter]: value })} />}
-      {showStats && <Button onClick={handleViewStats} className="block mx-auto my-4">Confirm</Button>}
-      {showStats && stats && <StatsTable stats={stats} />}
-      {editingWorkout && (
-        <WorkoutForm
-          initialWorkout={editingWorkout}
-          onSave={handleSaveWorkout}
-          onCancel={() => setEditingWorkout(null)}
-        />
-      )}
-      {!showStats && <Table workouts={workouts} onEdit={(workouts) => setEditingWorkout({...workouts, _id: workouts._id})} onDelete={handleDeleteWorkout} />}
-    </div>
+    </Router>
   );
 };
 
